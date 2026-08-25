@@ -1,0 +1,4 @@
+en:
+  devise:
+    failure:
+      session_invalidated: "Your session was invalidated by an administrator. Please sign in again to continue."

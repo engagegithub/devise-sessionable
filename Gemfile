@@ -3,3 +3,7 @@
 source "https://rubygems.org"
 
 gemspec
+
+gem "bundler"
+gem "rake"
+gem "rubocop", ">= 1.60"

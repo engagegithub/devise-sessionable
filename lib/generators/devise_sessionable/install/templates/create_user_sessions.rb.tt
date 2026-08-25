@@ -1,0 +1,19 @@
+# frozen_string_literal: true
+
+class CreateUserSessions < ActiveRecord::Migration<%= migration_version %>
+  def change
+    create_table :user_sessions do |t|
+      t.references :user, null: false, foreign_key: true
+      t.string :token, null: false
+      t.string :user_agent
+      t.string :ip_address
+      t.datetime :last_seen_at
+      t.datetime :invalidated_at
+
+      t.timestamps
+    end
+
+    add_index :user_sessions, :token, unique: true
+    add_index :user_sessions, :invalidated_at
+  end
+end
