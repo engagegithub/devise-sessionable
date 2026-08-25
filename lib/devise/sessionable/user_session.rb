@@ -6,6 +6,7 @@ module Devise
       self.table_name = "user_sessions"
 
       SESSION_KEY = "user_session_token"
+      LAST_SEEN_TTL = 5.minutes.to_i
 
       belongs_to :user, inverse_of: :user_sessions
 
@@ -20,11 +21,11 @@ module Devise
       def invalidate!
         return unless active?
 
-        update!(invalidated_at: Time.current)
+        update_column(:invalidated_at, Time.current)
       end
 
       def touch_last_seen_at
-        return if last_seen_at.present? && last_seen_at > 5.minutes.ago
+        return if last_seen_at.present? && last_seen_at > LAST_SEEN_TTL.seconds.ago
 
         update_column(:last_seen_at, Time.current)
       end

@@ -29,7 +29,6 @@ module Devise
         def track_session_creation(resource, options = {})
           return if options[:store] == false
           return unless resource.respond_to?(:create_user_session!)
-          return if impersonating_user?
           return unless browser_session_stored?
 
           if (previous_token = session[Devise::Sessionable::UserSession::SESSION_KEY])
@@ -50,7 +49,6 @@ module Devise
 
         def verify_tracked_user_session
           return unless user_signed_in?
-          return if impersonating_user?
           return unless browser_session_stored?
 
           token = session[Devise::Sessionable::UserSession::SESSION_KEY]
@@ -94,10 +92,6 @@ module Devise
 
         def browser_session_stored?
           session["warden.user.user.key"].present?
-        end
-
-        def impersonating_user?
-          respond_to?(:true_user) && true_user.present? && true_user != current_user
         end
       end
     end
