@@ -67,13 +67,6 @@ purge_expired_user_sessions:
 
 Retention is configured by the host via the `before:` argument.
 
-## Remember me / pre-tracking sessions
-
-Silent remember-me restore and sessions created before this gem was installed may
-lack a tracking token. On the next request the gem will either start tracking or,
-after `invalidate_all_sessions!`, sign the user out (a soft-invalidated marker is
-created even when there were no rows to invalidate).
-
 ## License
 
 The gem is available as open source under the terms of the [MIT License](LICENSE.txt).
