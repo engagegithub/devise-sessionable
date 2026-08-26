@@ -29,7 +29,6 @@ module Devise
         def track_session_creation(resource, options = {})
           return if options[:store] == false
           return unless resource.respond_to?(:create_user_session!)
-          return unless browser_session_stored?
 
           if (previous_token = session[Devise::Sessionable::UserSession::SESSION_KEY])
             resource.user_sessions.active.find_by(token: previous_token)&.invalidate!
@@ -49,20 +48,14 @@ module Devise
 
         def verify_tracked_user_session
           return unless user_signed_in?
-          return unless browser_session_stored?
 
           token = session[Devise::Sessionable::UserSession::SESSION_KEY]
-          return handle_missing_session_token if token.blank?
+          if token.blank?
+            Rails.logger.warn("[Devise::Sessionable] missing session token; skipping verification")
+            return
+          end
 
           verify_active_session_token(token)
-        end
-
-        def handle_missing_session_token
-          if untracked_session_revoked?
-            revoke_invalid_browser_session!
-          else
-            track_session_creation(current_user)
-          end
         end
 
         def verify_active_session_token(token)
@@ -74,11 +67,6 @@ module Devise
           end
         end
 
-        def untracked_session_revoked?
-          current_user.user_sessions.active.none? &&
-            current_user.user_sessions.invalidated.exists?
-        end
-
         def revoke_invalid_browser_session!
           sign_out(current_user)
 
@@ -88,10 +76,6 @@ module Devise
           else
             head :unauthorized
           end
-        end
-
-        def browser_session_stored?
-          session["warden.user.user.key"].present?
         end
       end
     end

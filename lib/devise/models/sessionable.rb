@@ -24,14 +24,6 @@ module Devise
       def invalidate_all_sessions!
         now = Time.current
         user_sessions.active.update_all(invalidated_at: now, updated_at: now)
-
-        return if user_sessions.invalidated.exists?
-
-        user_sessions.create!(
-          token: Devise.friendly_token(32),
-          invalidated_at: now,
-          last_seen_at: now
-        )
       end
     end
   end

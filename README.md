@@ -53,7 +53,8 @@ user.invalidate_all_sessions!
 ```
 
 Active sessions are soft-invalidated (`invalidated_at` set). The next request for
-those devices signs the user out.
+those devices that still carry a tracking token signs the user out. Requests with
+no tracking token skip verification (short-lived app sessions re-login soon after).
 
 ### 4. Purge old invalidated rows (optional)
 
@@ -61,7 +62,7 @@ Schedule in your job runner, e.g. SolidQueue `config/recurring.yml`:
 
 ```yaml
 purge_expired_user_sessions:
-  command: "Devise::Sessionable::PurgeExpiredJob.perform_now(before: 1.month.ago)"
+  command: "Devise::Sessionable::PurgeExpiredJob.perform_later(before: 1.month.ago)"
   schedule: every day at 4:00 am
 ```
 
