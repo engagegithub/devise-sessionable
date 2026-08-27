@@ -50,12 +50,11 @@ module Devise
           return unless user_signed_in?
 
           token = session[Devise::Sessionable::UserSession::SESSION_KEY]
-          if token.blank?
+          if token.present?
+            verify_active_session_token(token)
+          else
             Rails.logger.warn("[Devise::Sessionable] missing session token; skipping verification")
-            return
           end
-
-          verify_active_session_token(token)
         end
 
         def verify_active_session_token(token)
