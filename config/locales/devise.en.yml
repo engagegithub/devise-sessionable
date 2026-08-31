@@ -2,3 +2,6 @@ en:
   devise:
     failure:
       session_invalidated: "Your session was invalidated by an administrator. Please sign in again to continue."
+  devise_sessionable:
+    account_membership:
+      session_invalidated: "Your session for this account has been invalidated."

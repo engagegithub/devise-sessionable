@@ -20,6 +20,8 @@ rails generate devise_sessionable:install
 rails db:migrate
 ```
 
+Account membership only: `rails generate devise_sessionable:install --skip-user-sessions`
+
 ## Setup
 
 ### 1. User model
@@ -55,6 +57,15 @@ user.invalidate_all_sessions!
 Active sessions are soft-invalidated (`invalidated_at` set). The next request for
 those devices that still carry a tracking token signs the user out. Requests with
 no tracking token skip verification (short-lived app sessions re-login soon after).
+
+### Account membership
+
+```ruby
+include Devise::Sessionable::AccountMembership
+include Devise::Sessionable::Controllers::AccountSessionTrackable
+
+account_user.invalidate_session!
+```
 
 ### 4. Purge old invalidated rows (optional)
 
