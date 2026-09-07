@@ -68,6 +68,7 @@ module Devise
 
         def revoke_invalid_browser_session!
           sign_out(current_user)
+          store_location_for(:user, post_revoke_redirection_path)
 
           if request.format.html?
             redirect_to new_user_session_path,
@@ -75,6 +76,10 @@ module Devise
           else
             head :unauthorized
           end
+        end
+
+        def post_revoke_redirection_path
+          request.fullpath if request.get? && request.format.html?
         end
       end
     end
