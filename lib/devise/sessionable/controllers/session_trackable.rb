@@ -84,11 +84,7 @@ module Devise
         end
 
         def session_tracked_user
-          if respond_to?(:true_user, true)
-            true_user || current_user
-          else
-            current_user
-          end
+          current_user
         end
       end
     end
