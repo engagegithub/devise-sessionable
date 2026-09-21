@@ -40,14 +40,14 @@ module Devise
 
         def track_session_destruction
           token = session[Devise::Sessionable::UserSession::SESSION_KEY]
-          return if token.blank? || current_user.blank?
+          return if token.blank? || session_tracked_user.blank?
 
-          current_user.user_sessions.active.find_by(token: token)&.invalidate!
+          session_tracked_user.user_sessions.active.find_by(token: token)&.invalidate!
           session.delete(Devise::Sessionable::UserSession::SESSION_KEY)
         end
 
         def verify_tracked_user_session
-          return unless user_signed_in?
+          return unless session_tracked_user
 
           token = session[Devise::Sessionable::UserSession::SESSION_KEY]
           if token.present?
@@ -58,7 +58,7 @@ module Devise
         end
 
         def verify_active_session_token(token)
-          user_session = current_user.user_sessions.active.find_by(token: token)
+          user_session = session_tracked_user.user_sessions.active.find_by(token: token)
           if user_session
             user_session.touch_last_seen_at
           else
@@ -67,7 +67,7 @@ module Devise
         end
 
         def revoke_invalid_browser_session!
-          sign_out(current_user)
+          sign_out(session_tracked_user)
           store_location_for(:user, post_revoke_redirection_path)
 
           if request.format.html?
@@ -80,6 +80,10 @@ module Devise
 
         def post_revoke_redirection_path
           request.fullpath if request.get? && request.format.html?
+        end
+
+        def session_tracked_user
+          current_user
         end
       end
     end
