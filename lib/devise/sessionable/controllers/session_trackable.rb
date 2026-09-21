@@ -40,10 +40,9 @@ module Devise
 
         def track_session_destruction
           token = session[Devise::Sessionable::UserSession::SESSION_KEY]
-          user = session_tracked_user
-          return if token.blank? || user.blank?
+          return if token.blank? || session_tracked_user.blank?
 
-          user.user_sessions.active.find_by(token: token)&.invalidate!
+          session_tracked_user.user_sessions.active.find_by(token: token)&.invalidate!
           session.delete(Devise::Sessionable::UserSession::SESSION_KEY)
         end
 
